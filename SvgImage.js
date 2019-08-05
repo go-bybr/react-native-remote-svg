@@ -16,6 +16,21 @@ const getHTML = (svgContent, style) => {
       svgContent = svgContent.replace(`<svg`, `<svg viewBox="0 0 ${width} ${height}"`);
     } catch (error){}
   }
+
+  if (style.width) {
+    svgContent = svgContent.replace(
+      /(?:width ?= ?(?:"|'))([0-9]+\.?[0-9]*)(?=(?:"|'))/,
+      `width="${style.width}"`,
+    );
+  }
+
+  if (style.height) {
+    svgContent = svgContent.replace(
+      /(?:height ?= ?(?:"|'))([0-9]+\.?[0-9]*)(?=(?:"|'))/,
+      `height="${style.height}"`,
+    );
+  }
+  
   return `
 <html data-key="key-${style.height}-${style.width}">
   <head>
@@ -92,8 +107,6 @@ class SvgImage extends Component {
             useWebKit={false}
             style={[
               {
-                width: props.style.width || 200,
-                height: props.style.height || 100,
                 backgroundColor: 'transparent',
               },
             ]}
