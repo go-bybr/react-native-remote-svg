@@ -62,7 +62,9 @@ const getHTML = (svgContent, style) => {
 
 class SvgImage extends Component {
   state = { fetchingUrl: null, svgContent: null };
+  isMounted = false
   componentDidMount() {
+    this.isMounted = true
     this.doFetch(this.props);
   }
   componentWillReceiveProps(nextProps) {
@@ -72,6 +74,9 @@ class SvgImage extends Component {
     if (nextUri && prevUri !== nextUri) {
       this.doFetch(nextProps);
     }
+  }
+  componentWillUnmount() {
+    this.isMounted = false
   }
   doFetch = async props => {
     let uri = props.source && props.source.uri;
@@ -83,7 +88,13 @@ class SvgImage extends Component {
       } else {
         try {
           const res = await fetch(uri);
+          if (!this.isMounted) {
+            return
+          }
           const text = await res.text();
+          if (!this.isMounted) {
+            return
+          }
           this.setState({ fetchingUrl: uri, svgContent: text });
         } catch (err) {
           console.error('got error', err);
